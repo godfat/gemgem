@@ -40,7 +40,7 @@ module Gemgem
   def split_lines ruby
     ruby.gsub(/(.+?)\[(.+?)\]/){ |s|
       if $2.index(',')
-        "#{$1}[\n  #{$2.split(',').map(&:strip).join("\n  ")}]"
+        "#{$1}[\n  #{$2.split(',').map(&:strip).join(",\n  ")}]"
       else
         s
       end
