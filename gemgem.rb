@@ -11,7 +11,7 @@ module Gemgem
     yield(spec = Gem::Specification.new{ |s|
       s.authors     = ['Lin Jen-Shin (godfat)']
       s.email       = ['godfat (XD) godfat.org']
-      s.homepage    = "http://github.com/godfat/#{s.name}"
+      s.homepage    = "https://github.com/godfat/#{s.name}"
 
       s.summary     = File.read("#{Gemgem.dir}/README").
                       match(/DESCRIPTION:\n\n(.+?)\n\n/m)[1]
