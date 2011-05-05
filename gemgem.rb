@@ -33,7 +33,18 @@ module Gemgem
   end
 
   def write
-    File.open("#{dir}/#{spec.name}.gemspec", 'w'){ |f| f << spec.to_ruby }
+    File.open("#{dir}/#{spec.name}.gemspec", 'w'){ |f|
+      f << split_lines(spec.to_ruby) }
+  end
+
+  def split_lines ruby
+    ruby.gsub(/(.+?)\[(.+?)\]/){ |s|
+      if $2.index(',')
+        "#{$1}[\n  #{$2.split(',').map(&:strip).join("\n  ")}]"
+      else
+        s
+      end
+    }
   end
 
   def all_files
