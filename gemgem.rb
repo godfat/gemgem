@@ -159,8 +159,6 @@ task :clean => ['gem:spec'] do
   Gemgem.ignored_files.each{ |file| sh "mv #{file} #{trash}" }
 end
 
-
 task :default do
-  Rake.application.options.show_task_pattern = /./
-  Rake.application.display_tasks_and_comments
+  puts `#{Gem.ruby} -S #{$PROGRAM_NAME} -T`
 end
