@@ -17,18 +17,21 @@ module Gemgem
                             match(/DESCRIPTION:\n\n(.+?)\n\n/m)[1]
     d s, :description     , s.summary
 
-    d s, :extra_rdoc_files, %w[CHANGES CONTRIBUTORS LICENSE TODO]
-    d s, :rdoc_options    , %w[--main README]
-    d s, :rubygems_version, Gem::VERSION
-    d s, :date            , Time.now.strftime('%Y-%m-%d')
     d s, :files           , gem_files
     d s, :test_files      , gem_files.grep(%r{^test/(.+?/)*test_.+?\.rb$})
+
+    d s, :extra_rdoc_files, %w[CHANGES CONTRIBUTORS LICENSE TODO]
+    d s, :rdoc_options    , %w[--main README]
     d s, :require_paths   , %w[lib]
+    d s, :date            , Time.now.strftime('%Y-%m-%d')
+    d s, :rubygems_version, Gem::VERSION
     s
   end
 
   def d spec, key, value
-    spec.send("#{key}=", value) unless spec.send(key)
+    v = spec.send(key)
+    spec.send("#{key}=", value) if v.nil? or
+                                   v.respond_to?(:empty?) && v.empty?
   end
 
   def gem_tag
