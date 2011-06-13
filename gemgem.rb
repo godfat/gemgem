@@ -8,24 +8,27 @@ module Gemgem
 
   module_function
   def create
-    yield(spec = Gem::Specification.new{ |s|
-      s.authors     = ['Lin Jen-Shin (godfat)']
-      s.email       = ['godfat (XD) godfat.org']
-      s.homepage    = "https://github.com/godfat/#{s.name}"
+    yield(s = Gem::Specification.new)
+    d s, :authors         , ['Lin Jen-Shin (godfat)' ]
+    d s, :email           , ['godfat (XD) godfat.org']
+    d s, :homepage        , "https://github.com/godfat/#{s.name}"
 
-      s.summary     = File.read("#{Gemgem.dir}/README").
-                      match(/DESCRIPTION:\n\n(.+?)\n\n/m)[1]
-      s.description = s.summary
+    d s, :summary         , File.read("#{Gemgem.dir}/README").
+                            match(/DESCRIPTION:\n\n(.+?)\n\n/m)[1]
+    d s, :description     , s.summary
 
-      s.extra_rdoc_files = %w[CHANGES CONTRIBUTORS LICENSE TODO]
-      s.rdoc_options     = %w[--main README]
-      s.rubygems_version = Gem::VERSION
-      s.date             = Time.now.strftime('%Y-%m-%d')
-      s.files            = gem_files
-      s.test_files       = gem_files.grep(%r{^test/(.+?/)*test_.+?\.rb$})
-      s.require_paths    = %w[lib]
-    })
-    spec
+    d s, :extra_rdoc_files, %w[CHANGES CONTRIBUTORS LICENSE TODO]
+    d s, :rdoc_options    , %w[--main README]
+    d s, :rubygems_version, Gem::VERSION
+    d s, :date            , Time.now.strftime('%Y-%m-%d')
+    d s, :files           , gem_files
+    d s, :test_files      , gem_files.grep(%r{^test/(.+?/)*test_.+?\.rb$})
+    d s, :require_paths   , %w[lib]
+    s
+  end
+
+  def d spec, key, value
+    spec.send("#{key}=", value) unless spec.send(key)
   end
 
   def gem_tag
