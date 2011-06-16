@@ -144,7 +144,7 @@ end # of gem namespace
 
 desc 'Run tests'
 task :test do
-  sh("#{Gem.ruby} -I lib -S bacon test/test_*.rb")
+  sh("#{Gem.ruby} -I lib -S bacon --quiet test/test_*.rb")
 end
 
 desc 'Generate rdoc'
