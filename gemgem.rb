@@ -144,7 +144,12 @@ end # of gem namespace
 
 desc 'Run tests'
 task :test do
-  sh("#{Gem.ruby} -I lib -S bacon --quiet test/test_*.rb")
+  unless defined?(RUBY_ENGINE) && RUBY_ENGINE == 'jruby'
+    sh("#{Gem.ruby} -I lib -S bacon --quiet test/test_*.rb")
+  else
+    files = Dir['test/test_*.rb']
+    sh("#{Gem.ruby} -X+O -I lib -S bacon --quiet #{files.join(' ')}")
+  end
 end
 
 desc 'Generate rdoc'
