@@ -24,8 +24,7 @@ module Gemgem
       s.test_files       = gem_files.grep(%r{^test/(.+?/)*test_.+?\.rb$})
       s.require_paths    = %w[lib]
     })
-    spec.homepage = "https://github.com/godfat/#{spec.name}" unless
-      spec.homepage
+    spec.homepage ||= "https://github.com/godfat/#{spec.name}"
     spec
   end
 
