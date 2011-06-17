@@ -14,7 +14,7 @@ module Gemgem
 
       description   = File.read("#{Gemgem.dir}/README").
                       match(/DESCRIPTION:\n\n(.+?)(?=\n\n[^\n]+:\n)/m)[1].
-                      lines.to_a.map{ |l| l.tr("\n", ' ') }
+                      lines.to_a
 
       s.description = description.join
       s.summary     = description.first
