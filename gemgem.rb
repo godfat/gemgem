@@ -12,9 +12,12 @@ module Gemgem
       s.authors     = ['Lin Jen-Shin (godfat)']
       s.email       = ['godfat (XD) godfat.org']
 
-      s.summary     = File.read("#{Gemgem.dir}/README").
-                      match(/DESCRIPTION:\n\n(.+?)\n\n/m)[1]
-      s.description = s.summary
+      description   = File.read("#{Gemgem.dir}/README").
+                      match(/DESCRIPTION:\n\n(.+?)(?=\n\n[^\n]+:\n)/m)[1].
+                      lines.to_a.map{ |l| l.tr("\n", ' ') }
+
+      s.description = description.join
+      s.summary     = description.first
 
       s.extra_rdoc_files = %w[CHANGES CONTRIBUTORS LICENSE TODO]
       s.rdoc_options     = %w[--main README]
