@@ -153,14 +153,18 @@ task :test do
   Dir['test/test_*.rb'].each{ |file| load file }
 end
 
-desc 'Run tests with command line'
-task 'test:bacon' do
-  unless defined?(RUBY_ENGINE) && RUBY_ENGINE == 'jruby'
-    sh("#{Gem.ruby} -I lib -S bacon --quiet test/test_*.rb")
-  else
-    files = Dir['test/test_*.rb']
-    sh("#{Gem.ruby} -X+O -I lib -S bacon --quiet #{files.join(' ')}")
-  end
+desc 'Run tests with shell'
+task 'test:shell', :RUBY_OPTS do |t, args|
+  files = unless defined?(RUBY_ENGINE) && RUBY_ENGINE == 'jruby'
+            'test/test_*.rb'
+          else
+            Dir['test/test_*.rb'].join(' ')
+          end
+
+  cmd = [Gem.ruby, args[:RUBY_OPTS],
+         '-I', 'lib', '-S', 'bacon', '--quiet', files]
+
+  sh(cmd.compact.join(' '))
 end
 
 desc 'Generate rdoc'
