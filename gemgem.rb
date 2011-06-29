@@ -144,8 +144,17 @@ end
 
 end # of gem namespace
 
-desc 'Run tests'
+desc 'Run tests in memory'
 task :test do
+  require 'bacon'
+  Bacon.extend(Bacon::TestUnitOutput)
+  Bacon.summary_on_exit
+  $LOAD_PATH.unshift('lib')
+  Dir['test/test_*.rb'].each{ |file| load file }
+end
+
+desc 'Run tests with command line'
+task 'test:bacon' do
   unless defined?(RUBY_ENGINE) && RUBY_ENGINE == 'jruby'
     sh("#{Gem.ruby} -I lib -S bacon --quiet test/test_*.rb")
   else
