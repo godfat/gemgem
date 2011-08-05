@@ -26,6 +26,7 @@ module Gemgem
       s.date             = Time.now.strftime('%Y-%m-%d')
       s.files            = gem_files
       s.test_files       = gem_files.grep(%r{^test/(.+?/)*test_.+?\.rb$})
+      s.executables      = Dir['bin/*'].map{ |f| File.basename(f) }
       s.require_paths    = %w[lib]
     })
     spec.homepage ||= "https://github.com/godfat/#{spec.name}"
