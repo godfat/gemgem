@@ -156,11 +156,7 @@ end
 
 desc 'Run tests with shell'
 task 'test:shell', :RUBY_OPTS do |t, args|
-  files = unless defined?(RUBY_ENGINE) && RUBY_ENGINE == 'jruby'
-            'test/test_*.rb'
-          else
-            Dir['test/test_*.rb'].join(' ')
-          end
+  files = Dir['test/**/test_*.rb'].join(' ')
 
   cmd = [Gem.ruby, args[:RUBY_OPTS],
          '-I', 'lib', '-S', 'bacon', '--quiet', files]
