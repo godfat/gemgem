@@ -151,7 +151,7 @@ task :test do
   Bacon.extend(Bacon::TestUnitOutput)
   Bacon.summary_on_exit
   $LOAD_PATH.unshift('lib')
-  Dir['test/test_*.rb'].each{ |file| load file }
+  Dir['test/**/test_*.rb'].each{ |file| load file }
 end
 
 desc 'Run tests with shell'
