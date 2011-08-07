@@ -19,7 +19,8 @@ module Gemgem
       s.description = description.join
       s.summary     = description.first
 
-      s.extra_rdoc_files = %w[CHANGES CONTRIBUTORS LICENSE TODO].select{ |f|
+      s.extra_rdoc_files = %w[CHANGES    TODO    CONTRIBUTORS LICENSE
+                              CHANGES.md TODO.md CONTRIBUTORS].select{ |f|
                              File.exist?(f) }
       s.rdoc_options     = %w[--main README]
       s.rubygems_version = Gem::VERSION
