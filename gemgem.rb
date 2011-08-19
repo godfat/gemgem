@@ -12,7 +12,7 @@ module Gemgem
       s.authors     = ['Lin Jen-Shin (godfat)']
       s.email       = ['godfat (XD) godfat.org']
 
-      description   = File.read("#{Gemgem.dir}/README").
+      description   = readme.
                       match(/DESCRIPTION:\n\n(.+?)(?=\n\n[^\n]+:\n)/m)[1].
                       lines.to_a
 
@@ -28,6 +28,17 @@ module Gemgem
     })
     spec.homepage ||= "https://github.com/godfat/#{spec.name}"
     spec
+  end
+
+  def readme
+    path = %w[README.md README].find{ |name|
+      File.exist?("#{Gemgem.dir}/#{name}")
+    }
+    if path
+      File.read(path)
+    else
+      "DESCRIPTION:\n\n \n\nEND:\n"
+    end
   end
 
   def gem_tag
