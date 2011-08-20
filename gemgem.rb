@@ -160,7 +160,7 @@ task :test do
   Bacon.extend(Bacon::TestUnitOutput)
   Bacon.summary_on_exit
   $LOAD_PATH.unshift('lib')
-  Dir['test/**/test_*.rb'].each{ |file| load file }
+  Dir['./test/**/test_*.rb'].each{ |file| require file[0..-4] }
 end
 
 desc 'Run tests with shell'
