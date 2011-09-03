@@ -215,6 +215,16 @@ task 'test:shell', :RUBY_OPTS do |t, args|
   sh(cmd.compact.join(' '))
 end
 
+desc 'Generate ann markdown'
+task 'ann:md' => ['gem:spec'] do
+  puts Gemgem.ann_md
+end
+
+desc 'Generate ann html'
+task 'ann:html' => ['gem:spec'] do
+  puts Gemgem.ann_html
+end
+
 desc 'Generate rdoc'
 task :doc => ['gem:spec'] do
   sh("yardoc -o rdoc --main README.md" \
