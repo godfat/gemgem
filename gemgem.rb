@@ -60,7 +60,7 @@ module Gemgem
       end
   end
 
-  def ann_markdown
+  def ann_md
     "##{readme['HEADER'].sub(/(\w+)/, "[\\1](#{spec.homepage})")}\n\n" \
     "##{readme['DESCRIPTION'][/[^\n]+\n\n[^\n]+/]}\n\n"                \
     "### CHANGES:\n\n"                                                 \
@@ -74,7 +74,7 @@ module Gemgem
     gem 'kramdown'
 
     IO.popen('kramdown', 'r+') do |md|
-      md.puts Gemgem.ann_markdown
+      md.puts Gemgem.ann_md
       md.close_write
       require 'nokogiri'
       html = Nokogiri::XML.parse("<gemgem>#{md.read}</gemgem>")
