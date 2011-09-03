@@ -32,11 +32,11 @@ module Gemgem
     }
     @readme ||=
       if path
-        File.read(path).scan(/#+[^\n]+\n\n.+?(?=\n\n[^\n]+:\n)/m).
-          inject({}){ |r, s|
-            r[s[/\w+/]] = s
-            r
-          }
+        ps = File.read(path).scan(/#+[^\n]+\n\n.+?(?=\n\n#+[^\n]+\n)/m)
+        ps.inject({'HEADER' => ps.first}){ |r, s, i|
+          r[s[/\w+/]] = s
+          r
+        }
       else
         {}
       end
