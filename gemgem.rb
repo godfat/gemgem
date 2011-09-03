@@ -231,7 +231,7 @@ task :doc => ['gem:spec'] do
      " --files #{Gemgem.spec.extra_rdoc_files.join(',')}")
 end
 
-desc 'Removed ignored files'
+desc 'Remove ignored files'
 task :clean => ['gem:spec'] do
   trash = "~/.Trash/#{Gemgem.spec.name}/"
   sh "mkdir -p #{trash}" unless File.exist?(File.expand_path(trash))
