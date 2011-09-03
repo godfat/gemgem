@@ -69,6 +69,20 @@ module Gemgem
     "##{readme['SYNOPSIS']}"
   end
 
+  def ann_html
+    gem 'nokogiri'
+    gem 'kramdown'
+
+    IO.popen('kramdown', 'r+') do |md|
+      md.puts Gemgem.ann_markdown
+      md.close_write
+      require 'nokogiri'
+      html = Nokogiri::XML.parse("<gemgem>#{md.read}</gemgem>")
+      html.css('*').each{ |n| n.delete('id') }
+      html.root.children.to_html
+    end
+  end
+
   def gem_tag
     "#{spec.name}-#{spec.version}"
   end
