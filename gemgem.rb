@@ -60,6 +60,15 @@ module Gemgem
       end
   end
 
+  def ann_markdown
+    "##{readme['HEADER'].sub(/(\w+)/, "[\\1](#{spec.homepage})")}\n\n" \
+    "##{readme['DESCRIPTION'][/[^\n]+\n\n[^\n]+/]}\n\n"                \
+    "### CHANGES:\n\n"                                                 \
+    "###{changes}\n\n"                                                 \
+    "##{readme['INSTALLATION']}\n\n"                                   \
+    "##{readme['SYNOPSIS']}"
+  end
+
   def gem_tag
     "#{spec.name}-#{spec.version}"
   end
