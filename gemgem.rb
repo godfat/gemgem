@@ -12,10 +12,6 @@ module Gemgem
       s.authors     = ['Lin Jen-Shin (godfat)']
       s.email       = ['godfat (XD) godfat.org']
 
-      description   = readme.
-                      match(/DESCRIPTION:\n\n(.+?)(?=\n\n[^\n]+:\n)/m)[1].
-                      lines.to_a
-
       s.description = description.join
       s.summary     = description.first
 
@@ -34,11 +30,34 @@ module Gemgem
     path = %w[README.md README].find{ |name|
       File.exist?("#{Gemgem.dir}/#{name}")
     }
-    if path
-      File.read(path)
-    else
-      "DESCRIPTION:\n\n \n\nEND:\n"
-    end
+    @readme ||=
+      if path
+        File.read(path).scan(/#+[^\n]+\n\n.+?(?=\n\n[^\n]+:\n)/m).
+          inject({}){ |r, s|
+            r[s[/\w+/]] = s
+            r
+          }
+      else
+        {}
+      end
+  end
+
+  def description
+    @description ||= (readme['DESCRIPTION']||'').sub(/.+\n\n/, '').lines.to_a
+  end
+
+  def changes
+    path = %w[CHANGES.md CHANGES].find{ |name|
+      File.exist?("#{Gemgem.dir}/#{name}")
+    }
+    @changes ||=
+      if path
+        date = '\d+{4}\-\d+{2}\-\d{2}'
+        File.read(path).match(
+          /([^\n]+#{date}\n\n(.+?))(?=\n\n[^\n]+#{date}\n)/m)[1]
+      else
+        ''
+      end
   end
 
   def gem_tag
