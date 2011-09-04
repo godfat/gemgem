@@ -83,6 +83,15 @@ module Gemgem
     end
   end
 
+  def ann_email
+    "#{readme['HEADER'].sub(/([\w\-]+)/, "\\1 <#{spec.homepage}>")}\n\n" \
+    "#{readme['DESCRIPTION']}\n\n"                                       \
+    "#{readme['INSTALLATION']}\n\n"                                      +
+    if readme['SYNOPSIS'] then "##{readme['SYNOPSIS']}" else '' end      +
+    "## CHANGES:\n\n"                                                    \
+    "##{changes}\n\n"
+  end
+
   def gem_tag
     "#{spec.name}-#{spec.version}"
   end
@@ -223,6 +232,11 @@ end
 desc 'Generate ann html'
 task 'ann:html' => ['gem:spec'] do
   puts Gemgem.ann_html
+end
+
+desc 'Generate ann email'
+task 'ann:email' => ['gem:spec'] do
+  puts Gemgem.ann_email
 end
 
 desc 'Generate rdoc'
