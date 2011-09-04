@@ -87,7 +87,7 @@ module Gemgem
     "#{readme['HEADER'].sub(/([\w\-]+)/, "\\1 <#{spec.homepage}>")}\n\n" \
     "#{readme['DESCRIPTION']}\n\n"                                       \
     "#{readme['INSTALLATION']}\n\n"                                      +
-    if readme['SYNOPSIS'] then "##{readme['SYNOPSIS']}" else '' end      +
+    if readme['SYNOPSIS'] then "##{readme['SYNOPSIS']}\n\n" else '' end  +
     "## CHANGES:\n\n"                                                    \
     "##{changes}\n\n"
   end
