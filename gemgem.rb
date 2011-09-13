@@ -146,7 +146,7 @@ module Gemgem
 
   def ignore_patterns
     @ignore_files ||= expand_patterns(
-      File.read("#{dir}/.gitignore").split("\n").reject{ |pattern|
+      gitignore.split("\n").reject{ |pattern|
         pattern.strip == ''
       }).map{ |pattern| %r{^([^/]+/)*?#{Regexp.escape(pattern)}(/[^/]+)*?$} }
   end
@@ -162,6 +162,14 @@ module Gemgem
             map{ |prefix| "#{prefix}/#{File.basename(path)}" })
       end
     }.flatten
+  end
+
+  def gitignore
+    if File.exist?(path = "#{dir}/.gitignore")
+      File.read(path)
+    else
+      ''
+    end
   end
 end
 
