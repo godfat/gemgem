@@ -199,14 +199,14 @@ task :check do
   ver = Gemgem.spec.version.to_s
 
   if ENV['VERSION'].nil?
-    puts("\x1b[35mExpected "                                        \
-         "\x1b[33mVERSION\x1b[35m=\x1b[33m#{ver}\x1b[m")
+    puts("\e[35mExpected "                                  \
+         "\e[33mVERSION\e[35m=\e[33m#{ver}\e[m")
     exit(1)
 
   elsif ENV['VERSION'] != ver
-    puts("\x1b[35mExpected \x1b[33mVERSION\x1b[35m=\x1b[33m#{ver} " \
-         "\x1b[35mbut got\n         "                               \
-         "\x1b[33mVERSION\x1b[35m=\x1b[33m#{ENV['VERSION']}\x1b[m")
+    puts("\e[35mExpected \e[33mVERSION\e[35m=\e[33m#{ver} " \
+         "\e[35mbut got\n         "                         \
+         "\e[33mVERSION\e[35m=\e[33m#{ENV['VERSION']}\e[m")
     exit(2)
   end
 end
