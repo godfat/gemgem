@@ -54,7 +54,7 @@ module Gemgem
       if path
         date = '\d+{4}\-\d+{2}\-\d{2}'
         File.read(path).match(
-          /([^\n]+#{date}\n\n(.+?))(?=\n\n[^\n]+#{date}\n)/m)[1]
+          /([^\n]+#{date}\n\n(.+?))(?=\n\n[^\n]+#{date}\n|\Z)/m)[1]
       else
         ''
       end
