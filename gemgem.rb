@@ -200,13 +200,13 @@ task :check do
 
   if ENV['VERSION'].nil?
     puts("\e[35mExpected "                                  \
-         "\e[33mVERSION\e[35m=\e[33m#{ver}\e[m")
+         "\e[33mVERSION\e[35m=\e[33m#{ver}\e[0m")
     exit(1)
 
   elsif ENV['VERSION'] != ver
     puts("\e[35mExpected \e[33mVERSION\e[35m=\e[33m#{ver} " \
          "\e[35mbut got\n         "                         \
-         "\e[33mVERSION\e[35m=\e[33m#{ENV['VERSION']}\e[m")
+         "\e[33mVERSION\e[35m=\e[33m#{ENV['VERSION']}\e[0m")
     exit(2)
   end
 end
