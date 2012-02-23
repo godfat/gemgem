@@ -113,7 +113,7 @@ module Gemgem
 
   def all_files
     @all_files ||= find_files(Pathname.new(dir)).map{ |file|
-      if file.to_s =~ %r{\.git/}
+      if file.to_s =~ %r{\.git/|\.git$}
         nil
       else
         file.to_s
