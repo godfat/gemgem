@@ -62,7 +62,7 @@ module Gemgem
   end
 
   def ann_md
-    "##{readme['HEADER'].sub(/([\w\-]+)/, "[\\1](#{spec.homepage})")}\n\n" \
+     "#{readme['HEADER'].sub(/([\w\-]+)/, "[\\1](#{spec.homepage})")}\n\n" \
     "##{readme['DESCRIPTION'][/[^\n]+\n\n[^\n]+/]}\n\n"                    \
     "### CHANGES:\n\n"                                                     \
     "###{changes}\n\n"                                                     \
