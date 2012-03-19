@@ -32,7 +32,8 @@ module Gemgem
     }
     @readme ||=
       if path
-        ps = File.read(path).scan(/#+[^\n]+\n\n.+?(?=\n\n#+[^\n]+\n)/m)
+        ps = "##{File.read(path)}".
+             scan(/((#+)[^\n]+\n\n.+?(?=\n\n\2[^#\n]+\n))/m).map(&:first)
         ps.inject({'HEADER' => ps.first}){ |r, s, i|
           r[s[/\w+/]] = s
           r
