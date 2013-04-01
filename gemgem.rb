@@ -179,7 +179,7 @@ namespace :gem do
 
 desc 'Install gem'
 task :install => [:build] do
-  sh("#{Gem.ruby} -S gem install pkg/#{Gemgem.gem_tag}")
+  sh("#{Gem.ruby} -S gem install pkg/#{Gemgem.gem_tag}.gem")
 end
 
 desc 'Build gem'
