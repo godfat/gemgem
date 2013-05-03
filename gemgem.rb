@@ -14,6 +14,7 @@ module Gemgem
 
       s.description = description.join
       s.summary     = description.first
+      s.license     = readme['LICENSE'].sub(/.+\n\n/, '')
 
       s.rubygems_version = Gem::VERSION
       s.date             = Time.now.strftime('%Y-%m-%d')
