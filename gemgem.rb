@@ -105,9 +105,9 @@ module Gemgem
   end
 
   def split_lines ruby
-    ruby.gsub(/(.+?)\[(.+?)\]/){ |s|
+    ruby.gsub(/(.+?)\s*=\s*\[(.+?)\]/){ |s|
       if $2.index(',')
-        "#{$1}[\n  #{$2.split(',').map(&:strip).join(",\n  ")}]"
+        "#{$1} = [\n  #{$2.split(',').map(&:strip).join(",\n  ")}]"
       else
         s
       end
