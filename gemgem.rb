@@ -45,7 +45,7 @@ module Gemgem
   end
 
   def description
-    @description ||= (readme['DESCRIPTION']||'').sub(/.+\n\n/, '').lines.to_a
+    @description ||= (readme['DESCRIPTION']||'').sub(/.+\n\n/, '').lines
   end
 
   def changes
