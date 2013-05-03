@@ -14,7 +14,7 @@ module Gemgem
 
       s.description = description.join
       s.summary     = description.first
-      s.license     = readme['LICENSE'].sub(/.+\n\n/, '')
+      s.license     = readme['LICENSE'].sub(/.+\n\n/, '').lines.first.strip
 
       s.rubygems_version = Gem::VERSION
       s.date             = Time.now.strftime('%Y-%m-%d')
@@ -34,7 +34,7 @@ module Gemgem
     @readme ||=
       if path
         ps = "##{File.read(path)}".
-             scan(/((#+)[^\n]+\n\n.+?(?=(\n\n\2[^#\n]+\n)|$))/m).map(&:first)
+             scan(/((#+)[^\n]+\n\n.+?(?=(\n\n\2[^#\n]+\n)|\Z))/m).map(&:first)
         ps.inject('HEADER' => ps.first){ |r, s, i|
           r[s[/\w+/]] = s
           r
