@@ -21,6 +21,7 @@ module Gemgem
       s.summary     = description.first
       s.license     = readme['LICENSE'].sub(/.+\n\n/, '').lines.first.strip
 
+      s.date        = Time.now.strftime('%Y-%m-%d')
       s.files       = gem_files
       s.test_files  = test_files
       s.executables = bin_files
