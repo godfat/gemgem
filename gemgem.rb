@@ -143,7 +143,7 @@ module Gemgem
 
   def git_files
     @git_files ||= if File.exist?("#{dir}/.git")
-                     `git ls-files`.split("\n")
+                     `git --git-dir=#{dir}/.git ls-files`.split("\n")
                    else
                      []
                    end
