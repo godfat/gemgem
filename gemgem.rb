@@ -1,18 +1,19 @@
 
 module Gemgem
   class << self
-    attr_accessor :dir, :spec
+    attr_accessor :dir, :spec, :spec_create
   end
 
   module_function
-  def init dir
+  def init dir, &block
     self.dir = dir
     $LOAD_PATH.unshift("#{dir}/lib")
     ENV['PATH'] = "#{dir}/bin:#{ENV['PATH']}"
+    self.spec_create = block
   end
 
   def create
-    yield(spec = Gem::Specification.new{ |s|
+    spec = Gem::Specification.new do |s|
       s.authors     = ['Lin Jen-Shin (godfat)']
       s.email       = ['godfat (XD) godfat.org']
 
@@ -20,15 +21,13 @@ module Gemgem
       s.summary     = description.first
       s.license     = readme['LICENSE'].sub(/.+\n\n/, '').lines.first.strip
 
-      s.rubygems_version = Gem::VERSION
-      s.date             = Time.now.strftime('%Y-%m-%d')
-      s.files            = gem_files
-      s.test_files       = test_files
-      s.executables      = bin_files
-      s.require_paths    = %w[lib]
-    })
-    spec.homepage ||= "https://github.com/godfat/#{spec.name}"
-    spec
+      s.files       = gem_files
+      s.test_files  = test_files
+      s.executables = bin_files
+    end
+    spec_create.call(spec)
+    spec.homepage = "https://github.com/godfat/#{spec.name}"
+    self.spec = spec
   end
 
   def readme
@@ -185,6 +184,12 @@ task :build => [:spec] do
   sh("#{Gem.ruby} -S gem build #{Gemgem.spec.name}.gemspec")
   sh("mkdir -p pkg")
   sh("mv #{Gemgem.gem_tag}.gem pkg/")
+end
+
+desc 'Generate gemspec'
+task :spec do
+  Gemgem.create
+  Gemgem.write
 end
 
 desc 'Release gem'
