@@ -1,6 +1,4 @@
 
-require 'pathname'
-
 module Gemgem
   class << self
     attr_accessor :dir, :spec
@@ -115,7 +113,7 @@ module Gemgem
   end
 
   def all_files
-    @all_files ||= find_files(Pathname.new(dir)).map{ |file|
+    @all_files ||= find_files(dir).map{ |file|
       if file.to_s =~ %r{\.git/|\.git$}
         nil
       else
@@ -151,8 +149,13 @@ module Gemgem
 
   # protected
   def find_files path
-    path.children.select(&:file?).map{|file| file.to_s[(dir.size+1)..-1]} +
-    path.children.select(&:directory?).map{|dir| find_files(dir)}.flatten
+    Dir["#{path}/**/*"].inject([]){ |r, f|
+      if File.file?(f)
+        r << f[%r{^#{Regexp.escape(dir)}/(.*$)}, 1]
+      else
+        r
+      end
+    }
   end
 
   def ignore_patterns
@@ -169,7 +172,7 @@ module Gemgem
       else
         expand_patterns(
           Dir[path] +
-          Pathname.new(File.dirname(path)).children.select(&:directory?).
+          Dir["#{path}/*"].select{ |d| File.directory?(d) }.
             map{ |prefix| "#{prefix}/#{File.basename(path)}" })
       end
     }.flatten
