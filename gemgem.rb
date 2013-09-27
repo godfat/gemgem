@@ -269,5 +269,5 @@ task :clean => ['gem:spec'] do
 end
 
 task :default do
-  puts `#{Gem.ruby} -S #{$PROGRAM_NAME} -T`
+  exec "#{Gem.ruby} -S #{$PROGRAM_NAME} -f #{Rake.application.rakefile} -T"
 end
