@@ -112,18 +112,21 @@ module Gemgem
     }
   end
 
-  def all_files
-    @all_files ||= find_files(dir).map{ |file|
-      if file.to_s =~ %r{\.git/|\.git$}
-        nil
-      else
-        file.to_s
-      end
-    }.compact.sort
+  def escaped_dir
+    @escaped_dir ||= Regexp.escape(dir)
   end
 
   def gem_files
-    @gem_files ||= all_files - ignored_files
+    @gem_files ||=
+      Dir.glob("#{dir}/**/*", File::FNM_DOTMATCH).inject([]){ |files, path|
+        if File.file?(path) && path !~ %r{/\.git(/|$)}  &&
+           (rpath = path[%r{^#{escaped_dir}/(.*$)}, 1]) &&
+           (rpath !~ ignored_pattern || git_files.include?(rpath))
+          files << rpath
+        else
+          files
+        end
+      }.sort
   end
 
   def test_files
@@ -134,11 +137,6 @@ module Gemgem
     @bin_files ||= gem_files.grep(%r{^bin/}).map{ |f| File.basename(f) }
   end
 
-  def ignored_files
-    @ignored_file ||= all_files.select{ |path| ignore_patterns.find{ |ignore|
-      path =~ ignore && !git_files.include?(path)}}
-  end
-
   def git_files
     @git_files ||= if File.exist?("#{dir}/.git")
                      `git --git-dir=#{dir}/.git ls-files`.split("\n")
@@ -147,43 +145,31 @@ module Gemgem
                    end
   end
 
-  # protected
-  def find_files path
-    Dir["#{path}/**/*"].inject([]){ |r, f|
-      if File.file?(f)
-        r << f[%r{^#{Regexp.escape(dir)}/(.*$)}, 1]
+  def ignored_pattern
+    @ignored_pattern ||= Regexp.new(expand_patterns(gitignore).join('|'))
+  end
+
+  def expand_patterns pathes
+    # http://git-scm.com/docs/gitignore
+    pathes.flat_map{ |path|
+      case path
+      when %r{\*}
+        Regexp.escape(path).gsub(/\\\*/, '[^/]*')
+      when %r{^/}
+        "^#{Regexp.escape(path[1..-1])}"
       else
-        r
+        Regexp.escape(path)
       end
     }
   end
 
-  def ignore_patterns
-    @ignore_files ||= expand_patterns(
-      gitignore.split("\n").reject{ |pattern|
-        pattern.strip == ''
-      }).map{ |pattern| %r{^([^/]+/)*?#{Regexp.escape(pattern)}(/[^/]+)*?$} }
-  end
-
-  def expand_patterns pathes
-    pathes.map{ |path|
-      if path !~ /\*/
-        path
-      else
-        expand_patterns(
-          Dir[path] +
-          Dir["#{path}/*"].select{ |d| File.directory?(d) }.
-            map{ |prefix| "#{prefix}/#{File.basename(path)}" })
-      end
-    }.flatten
-  end
-
   def gitignore
-    if File.exist?(path = "#{dir}/.gitignore")
-      File.read(path)
-    else
-      ''
-    end
+    @gitignore ||= if File.exist?(path = "#{dir}/.gitignore")
+                     File.read(path).lines.
+                       reject{ |l| l == /^\s*(#|\s+$)/ }.map(&:strip)
+                   else
+                     []
+                   end
   end
 end
 
