@@ -124,51 +124,6 @@ module Gemgem
                      []
                    end
   end
-
-  # deprecate them?
-  def changes
-    @changes ||=
-      if (path = "#{Gemgem.dir}/CHANGES.md") && File.exist?(path)
-        date = '\d+{4}\-\d+{2}\-\d{2}'
-        File.read(path).match(
-          /([^\n]+#{date}\n\n(.+?))(?=\n\n[^\n]+#{date}\n|\Z)/m)[1]
-      else
-        ''
-      end
-  end
-
-  def ann_md
-     "#{readme['HEADER'].sub(/([\w\-]+)/, "[\\1](#{spec.homepage})")}\n\n" \
-    "##{readme['DESCRIPTION'][/[^\n]+\n\n[^\n]+/]}\n\n"                    \
-    "### CHANGES:\n\n"                                                     \
-    "###{changes}\n\n"                                                     \
-    "##{readme['INSTALLATION']}\n\n"                                       +
-    if readme['SYNOPSIS'] then "##{readme['SYNOPSIS'][/[^\n]+\n\n[^\n]+/]}"
-    else '' end
-  end
-
-  def ann_html
-    gem 'nokogiri'
-    gem 'kramdown'
-
-    IO.popen('kramdown', 'r+') do |md|
-      md.puts Gemgem.ann_md
-      md.close_write
-      require 'nokogiri'
-      html = Nokogiri::XML.parse("<gemgem>#{md.read}</gemgem>")
-      html.css('*').each{ |n| n.delete('id') }
-      html.root.children.to_html
-    end
-  end
-
-  def ann_email
-    "#{readme['HEADER'].sub(/([\w\-]+)/, "\\1 <#{spec.homepage}>")}\n\n" \
-    "#{readme['DESCRIPTION']}\n\n"                                       \
-    "#{readme['INSTALLATION']}\n\n"                                      +
-    if readme['SYNOPSIS'] then "##{readme['SYNOPSIS']}\n\n" else '' end  +
-    "## CHANGES:\n\n"                                                    \
-    "##{changes}\n\n"
-  end
 end
 
 namespace :gem do
@@ -231,21 +186,6 @@ task 'test:shell', :RUBY_OPTS do |t, args|
          '-I', 'lib', '-S', 'bacon', '--quiet', *Gemgem.test_files]
 
   sh(cmd.compact.join(' '))
-end
-
-desc 'Generate ann markdown'
-task 'ann:md' => ['gem:spec'] do
-  puts Gemgem.ann_md
-end
-
-desc 'Generate ann html'
-task 'ann:html' => ['gem:spec'] do
-  puts Gemgem.ann_html
-end
-
-desc 'Generate ann email'
-task 'ann:email' => ['gem:spec'] do
-  puts Gemgem.ann_email
 end
 
 desc 'Generate rdoc'
