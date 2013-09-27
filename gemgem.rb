@@ -7,6 +7,11 @@ module Gemgem
   end
 
   module_function
+  def init dir
+    self.dir = dir
+    $LOAD_PATH.unshift("#{dir}/lib")
+  end
+
   def create
     yield(spec = Gem::Specification.new{ |s|
       s.authors     = ['Lin Jen-Shin (godfat)']
@@ -221,7 +226,6 @@ task :test do
   require 'bacon'
   Bacon.extend(Bacon::TestUnitOutput)
   Bacon.summary_on_exit
-  $LOAD_PATH.unshift('lib')
   Dir['./test/**/test_*.rb'].each{ |file| require file[0..-4] }
 end
 
