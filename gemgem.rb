@@ -180,14 +180,6 @@ task :test do
   Gemgem.test_files.each{ |file| require "#{Gemgem.dir}/#{file[0..-4]}" }
 end
 
-desc 'Run tests with shell'
-task 'test:shell', :RUBY_OPTS do |t, args|
-  cmd = [Gem.ruby, args[:RUBY_OPTS],
-         '-I', 'lib', '-S', 'bacon', '--quiet', *Gemgem.test_files]
-
-  sh(cmd.compact.join(' '))
-end
-
 desc 'Generate rdoc'
 task :doc => ['gem:spec'] do
   sh("yardoc -o rdoc --main README.md" \
