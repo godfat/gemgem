@@ -26,7 +26,7 @@ module Gemgem
       s.date             = Time.now.strftime('%Y-%m-%d')
       s.files            = gem_files
       s.test_files       = test_files
-      s.executables      = Dir['bin/*'].map{ |f| File.basename(f) }
+      s.executables      = bin_files
       s.require_paths    = %w[lib]
     })
     spec.homepage ||= "https://github.com/godfat/#{spec.name}"
@@ -136,6 +136,10 @@ module Gemgem
 
   def test_files
     @test_files ||= gem_files.grep(%r{^test/(.+?/)*test_.+?\.rb$})
+  end
+
+  def bin_files
+    @bin_files ||= gem_files.grep(%r{^bin/}).map{ |f| File.basename(f) }
   end
 
   def ignored_files
