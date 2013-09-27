@@ -227,7 +227,7 @@ task :test do
   require 'bacon'
   Bacon.extend(Bacon::TestUnitOutput)
   Bacon.summary_on_exit
-  Dir['./test/**/test_*.rb'].each{ |file| require file[0..-4] }
+  Dir["#{Gemgem.dir}/test/**/test_*.rb"].each{ |file| require file[0..-4] }
 end
 
 desc 'Run tests with shell'
