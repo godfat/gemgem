@@ -229,15 +229,13 @@ task :test do
   require 'bacon'
   Bacon.extend(Bacon::TestUnitOutput)
   Bacon.summary_on_exit
-  Dir["#{Gemgem.dir}/test/**/test_*.rb"].each{ |file| require file[0..-4] }
+  Gemgem.test_files.each{ |file| require "#{Gemgem.dir}/#{file[0..-4]}" }
 end
 
 desc 'Run tests with shell'
 task 'test:shell', :RUBY_OPTS do |t, args|
-  files = Dir['test/**/test_*.rb'].join(' ')
-
   cmd = [Gem.ruby, args[:RUBY_OPTS],
-         '-I', 'lib', '-S', 'bacon', '--quiet', files]
+         '-I', 'lib', '-S', 'bacon', '--quiet', *Gemgem.test_files]
 
   sh(cmd.compact.join(' '))
 end
