@@ -34,11 +34,8 @@ module Gemgem
   end
 
   def readme
-    path = %w[README.md README].find{ |name|
-      File.exist?("#{Gemgem.dir}/#{name}")
-    }
     @readme ||=
-      if path
+      if (path = "#{Gemgem.dir}/README.md") && File.exist?(path)
         ps = "##{File.read(path)}".
              scan(/((#+)[^\n]+\n\n.+?(?=(\n\n\2[^#\n]+\n)|\Z))/m).map(&:first)
         ps.inject('HEADER' => ps.first){ |r, s, i|
@@ -55,11 +52,8 @@ module Gemgem
   end
 
   def changes
-    path = %w[CHANGES.md CHANGES].find{ |name|
-      File.exist?("#{Gemgem.dir}/#{name}")
-    }
     @changes ||=
-      if path
+      if (path = "#{Gemgem.dir}/CHANGES.md") && File.exist?(path)
         date = '\d+{4}\-\d+{2}\-\d{2}'
         File.read(path).match(
           /([^\n]+#{date}\n\n(.+?))(?=\n\n[^\n]+#{date}\n|\Z)/m)[1]
