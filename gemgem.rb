@@ -5,6 +5,12 @@ module Gemgem
   end
 
   module_function
+  def gem_tag    ; "#{spec.name}-#{spec.version}"     ; end
+  def gem_path   ; "#{pkg_dir}/#{gem_tag}.gem"        ; end
+  def spec_path  ; "#{dir}/#{spec.name}.gemspec"      ; end
+  def pkg_dir    ; "#{dir}/pkg"                       ; end
+  def escaped_dir; @escaped_dir ||= Regexp.escape(dir); end
+
   def init dir, &block
     self.dir = dir
     $LOAD_PATH.unshift("#{dir}/lib")
@@ -31,6 +37,20 @@ module Gemgem
     self.spec = spec
   end
 
+  def write
+    File.open(spec_path, 'w'){ |f| f << split_lines(spec.to_ruby) }
+  end
+
+  def split_lines ruby
+    ruby.gsub(/(.+?)\s*=\s*\[(.+?)\]/){ |s|
+      if $2.index(',')
+        "#{$1} = [\n  #{$2.split(',').map(&:strip).join(",\n  ")}]"
+      else
+        s
+      end
+    }
+  end
+
   def readme
     @readme ||=
       if (path = "#{Gemgem.dir}/README.md") && File.exist?(path)
@@ -47,85 +67,6 @@ module Gemgem
 
   def description
     @description ||= (readme['DESCRIPTION']||'').sub(/.+\n\n/, '').lines
-  end
-
-  def changes
-    @changes ||=
-      if (path = "#{Gemgem.dir}/CHANGES.md") && File.exist?(path)
-        date = '\d+{4}\-\d+{2}\-\d{2}'
-        File.read(path).match(
-          /([^\n]+#{date}\n\n(.+?))(?=\n\n[^\n]+#{date}\n|\Z)/m)[1]
-      else
-        ''
-      end
-  end
-
-  def ann_md
-     "#{readme['HEADER'].sub(/([\w\-]+)/, "[\\1](#{spec.homepage})")}\n\n" \
-    "##{readme['DESCRIPTION'][/[^\n]+\n\n[^\n]+/]}\n\n"                    \
-    "### CHANGES:\n\n"                                                     \
-    "###{changes}\n\n"                                                     \
-    "##{readme['INSTALLATION']}\n\n"                                       +
-    if readme['SYNOPSIS'] then "##{readme['SYNOPSIS'][/[^\n]+\n\n[^\n]+/]}"
-    else '' end
-  end
-
-  def ann_html
-    gem 'nokogiri'
-    gem 'kramdown'
-
-    IO.popen('kramdown', 'r+') do |md|
-      md.puts Gemgem.ann_md
-      md.close_write
-      require 'nokogiri'
-      html = Nokogiri::XML.parse("<gemgem>#{md.read}</gemgem>")
-      html.css('*').each{ |n| n.delete('id') }
-      html.root.children.to_html
-    end
-  end
-
-  def ann_email
-    "#{readme['HEADER'].sub(/([\w\-]+)/, "\\1 <#{spec.homepage}>")}\n\n" \
-    "#{readme['DESCRIPTION']}\n\n"                                       \
-    "#{readme['INSTALLATION']}\n\n"                                      +
-    if readme['SYNOPSIS'] then "##{readme['SYNOPSIS']}\n\n" else '' end  +
-    "## CHANGES:\n\n"                                                    \
-    "##{changes}\n\n"
-  end
-
-  def gem_tag
-    "#{spec.name}-#{spec.version}"
-  end
-
-  def gem_path
-    "#{pkg_dir}/#{gem_tag}.gem"
-  end
-
-  def spec_path
-    "#{dir}/#{spec.name}.gemspec"
-  end
-
-  def pkg_dir
-    "#{dir}/pkg"
-  end
-
-  def write
-    File.open("#{dir}/#{spec.name}.gemspec", 'w'){ |f|
-      f << split_lines(spec.to_ruby) }
-  end
-
-  def split_lines ruby
-    ruby.gsub(/(.+?)\s*=\s*\[(.+?)\]/){ |s|
-      if $2.index(',')
-        "#{$1} = [\n  #{$2.split(',').map(&:strip).join(",\n  ")}]"
-      else
-        s
-      end
-    }
-  end
-
-  def escaped_dir
-    @escaped_dir ||= Regexp.escape(dir)
   end
 
   def gem_files
@@ -182,6 +123,51 @@ module Gemgem
                    else
                      []
                    end
+  end
+
+  # deprecate them?
+  def changes
+    @changes ||=
+      if (path = "#{Gemgem.dir}/CHANGES.md") && File.exist?(path)
+        date = '\d+{4}\-\d+{2}\-\d{2}'
+        File.read(path).match(
+          /([^\n]+#{date}\n\n(.+?))(?=\n\n[^\n]+#{date}\n|\Z)/m)[1]
+      else
+        ''
+      end
+  end
+
+  def ann_md
+     "#{readme['HEADER'].sub(/([\w\-]+)/, "[\\1](#{spec.homepage})")}\n\n" \
+    "##{readme['DESCRIPTION'][/[^\n]+\n\n[^\n]+/]}\n\n"                    \
+    "### CHANGES:\n\n"                                                     \
+    "###{changes}\n\n"                                                     \
+    "##{readme['INSTALLATION']}\n\n"                                       +
+    if readme['SYNOPSIS'] then "##{readme['SYNOPSIS'][/[^\n]+\n\n[^\n]+/]}"
+    else '' end
+  end
+
+  def ann_html
+    gem 'nokogiri'
+    gem 'kramdown'
+
+    IO.popen('kramdown', 'r+') do |md|
+      md.puts Gemgem.ann_md
+      md.close_write
+      require 'nokogiri'
+      html = Nokogiri::XML.parse("<gemgem>#{md.read}</gemgem>")
+      html.css('*').each{ |n| n.delete('id') }
+      html.root.children.to_html
+    end
+  end
+
+  def ann_email
+    "#{readme['HEADER'].sub(/([\w\-]+)/, "\\1 <#{spec.homepage}>")}\n\n" \
+    "#{readme['DESCRIPTION']}\n\n"                                       \
+    "#{readme['INSTALLATION']}\n\n"                                      +
+    if readme['SYNOPSIS'] then "##{readme['SYNOPSIS']}\n\n" else '' end  +
+    "## CHANGES:\n\n"                                                    \
+    "##{changes}\n\n"
   end
 end
 
