@@ -180,12 +180,6 @@ task :test do
   Gemgem.test_files.each{ |file| require "#{Gemgem.dir}/#{file[0..-4]}" }
 end
 
-desc 'Generate rdoc'
-task :doc => ['gem:spec'] do
-  sh("yardoc -o rdoc --main README.md" \
-     " --files #{Gemgem.spec.extra_rdoc_files.join(',')}")
-end
-
 desc 'Remove ignored files'
 task :clean => ['gem:spec'] do
   trash = "~/.Trash/#{Gemgem.spec.name}/"
