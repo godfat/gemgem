@@ -25,7 +25,7 @@ module Gemgem
       s.rubygems_version = Gem::VERSION
       s.date             = Time.now.strftime('%Y-%m-%d')
       s.files            = gem_files
-      s.test_files       = gem_files.grep(%r{^test/(.+?/)*test_.+?\.rb$})
+      s.test_files       = test_files
       s.executables      = Dir['bin/*'].map{ |f| File.basename(f) }
       s.require_paths    = %w[lib]
     })
@@ -132,6 +132,10 @@ module Gemgem
 
   def gem_files
     @gem_files ||= all_files - ignored_files
+  end
+
+  def test_files
+    @test_files ||= gem_files.grep(%r{^test/(.+?/)*test_.+?\.rb$})
   end
 
   def ignored_files
