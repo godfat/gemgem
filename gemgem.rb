@@ -97,6 +97,18 @@ module Gemgem
     "#{spec.name}-#{spec.version}"
   end
 
+  def gem_path
+    "#{pkg_dir}/#{gem_tag}.gem"
+  end
+
+  def spec_path
+    "#{dir}/#{spec.name}.gemspec"
+  end
+
+  def pkg_dir
+    "#{dir}/pkg"
+  end
+
   def write
     File.open("#{dir}/#{spec.name}.gemspec", 'w'){ |f|
       f << split_lines(spec.to_ruby) }
@@ -177,14 +189,14 @@ namespace :gem do
 
 desc 'Install gem'
 task :install => [:build] do
-  sh("#{Gem.ruby} -S gem install pkg/#{Gemgem.gem_tag}.gem")
+  sh("#{Gem.ruby} -S gem install #{Gemgem.gem_path}")
 end
 
 desc 'Build gem'
 task :build => [:spec] do
-  sh("#{Gem.ruby} -S gem build #{Gemgem.spec.name}.gemspec")
-  sh("mkdir -p pkg")
-  sh("mv #{Gemgem.gem_tag}.gem pkg/")
+  sh("#{Gem.ruby} -S gem build #{Gemgem.spec_path}")
+  sh("mkdir -p #{Gemgem.pkg_dir}")
+  sh("mv #{Gemgem.gem_path.sub(%r{/pkg/}, '/')} #{Gemgem.pkg_dir}/")
 end
 
 desc 'Generate gemspec'
@@ -198,7 +210,7 @@ task :release => [:spec, :check, :build] do
   sh("git tag #{Gemgem.gem_tag}")
   sh("git push")
   sh("git push --tags")
-  sh("#{Gem.ruby} -S gem push pkg/#{Gemgem.gem_tag}.gem")
+  sh("#{Gem.ruby} -S gem push #{Gemgem.gem_path}")
 end
 
 task :check do
