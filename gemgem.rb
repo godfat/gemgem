@@ -10,6 +10,7 @@ module Gemgem
   def init dir
     self.dir = dir
     $LOAD_PATH.unshift("#{dir}/lib")
+    ENV['PATH'] = "#{dir}/bin:#{ENV['PATH']}"
   end
 
   def create
