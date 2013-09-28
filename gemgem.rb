@@ -51,6 +51,18 @@ module Gemgem
     }
   end
 
+  def strip_path path
+    strip_home_path(strip_cwd_path(path))
+  end
+
+  def strip_home_path path
+    path.sub(ENV['HOME'], '~')
+  end
+
+  def strip_cwd_path path
+    path.sub(Dir.pwd, '.')
+  end
+
   def readme
     @readme ||=
       if (path = "#{Gemgem.dir}/README.md") && File.exist?(path)
@@ -146,12 +158,14 @@ desc 'Build gem'
 task :build => [:spec] do
   require 'fileutils'
   require 'rubygems/package'
+  gem = nil
   Dir.chdir(Gemgem.dir) do
     gem = Gem::Package.build(Gem::Specification.load(Gemgem.spec_path))
     FileUtils.mkdir_p(Gemgem.pkg_dir)
     FileUtils.mv(gem, Gemgem.pkg_dir) # gem is relative path, but might be ok
-    puts "\e[35mGem built: \e[33m#{Gemgem.pkg_dir}/#{gem}\e[0m"
   end
+  puts "\e[35mGem built: \e[33m" \
+       "#{Gemgem.strip_path("#{Gemgem.pkg_dir}/#{gem}")}\e[0m"
 end
 
 desc 'Generate gemspec'
