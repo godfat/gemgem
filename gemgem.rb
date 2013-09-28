@@ -135,9 +135,14 @@ end
 
 desc 'Build gem'
 task :build => [:spec] do
-  sh("#{Gem.ruby} -S gem build #{Gemgem.spec_path}")
-  sh("mkdir -p #{Gemgem.pkg_dir}")
-  sh("mv #{Gemgem.gem_path.sub(%r{/pkg/}, '/')} #{Gemgem.pkg_dir}/")
+  require 'fileutils'
+  require 'rubygems/package'
+  Dir.chdir(Gemgem.dir) do
+    gem = Gem::Package.build(Gem::Specification.load(Gemgem.spec_path))
+    FileUtils.mkdir_p(Gemgem.pkg_dir)
+    FileUtils.mv(gem, Gemgem.pkg_dir) # gem is relative path, but might be ok
+    puts "\e[35mGem built: \e[33m#{Gemgem.pkg_dir}/#{gem}\e[0m"
+  end
 end
 
 desc 'Generate gemspec'
