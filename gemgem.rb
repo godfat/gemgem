@@ -154,7 +154,7 @@ module Gemgem
         Regexp.escape(path).gsub(/\\\*/, '[^/]*')
       when %r{^/}
         "^#{Regexp.escape(path[1..-1])}"
-      else
+      else # we didn't implement negative pattern for now
         Regexp.escape(path)
       end
     }
