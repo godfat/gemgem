@@ -202,6 +202,8 @@ end # of gem namespace
 
 desc 'Run tests in memory'
 task :test do
+  next if Gemgem.test_files.empty?
+
   require 'bacon'
   Bacon.extend(Bacon::TestUnitOutput)
   Bacon.summary_on_exit
