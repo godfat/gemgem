@@ -69,17 +69,22 @@ module Gemgem
     @description ||= (readme['DESCRIPTION']||'').sub(/.+\n\n/, '').lines
   end
 
-  def gem_files
-    @gem_files ||=
+  def all_files
+    @all_files ||=
       Dir.glob("#{dir}/**/*", File::FNM_DOTMATCH).inject([]){ |files, path|
         if File.file?(path) && path !~ %r{/\.git(/|$)}  &&
-           (rpath = path[%r{^#{escaped_dir}/(.*$)}, 1]) &&
-           (rpath !~ ignored_pattern || git_files.include?(rpath))
+           (rpath = path[%r{^#{escaped_dir}/(.*$)}, 1])
           files << rpath
         else
           files
         end
       }.sort
+  end
+
+  def gem_files
+    @gem_files ||= all_files.reject{ |f|
+      f =~ ignored_pattern && !git_files.include?(f)
+    }
   end
 
   def test_files
@@ -96,6 +101,10 @@ module Gemgem
                    else
                      []
                    end
+  end
+
+  def ignored_files
+    @ignored_files ||= all_files.grep(ignored_pattern)
   end
 
   def ignored_pattern
