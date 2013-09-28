@@ -212,9 +212,23 @@ end
 
 desc 'Remove ignored files'
 task :clean => ['gem:spec'] do
-  trash = "~/.Trash/#{Gemgem.spec.name}/"
-  sh "mkdir -p #{trash}" unless File.exist?(File.expand_path(trash))
-  Gemgem.ignored_files.each{ |file| sh "mv #{file} #{trash}" }
+  next if Gemgem.ignored_files.empty?
+
+  require 'fileutils'
+  trash = File.expand_path("~/.Trash/#{Gemgem.spec.name}")
+  puts "Move the following files into:" \
+       " \e[35m#{Gemgem.strip_path(trash)}\e[33m"
+
+  Gemgem.ignored_files.each do |file|
+    from = "#{Gemgem.dir}/#{file}"
+    to   = "#{trash}/#{File.dirname(file)}"
+    puts Gemgem.strip_path(from)
+
+    FileUtils.mkdir_p(to)
+    FileUtils.mv(from, to)
+  end
+
+  print "\e[0m"
 end
 
 task :default do
