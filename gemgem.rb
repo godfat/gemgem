@@ -75,6 +75,10 @@ module Gemgem
     Rake.sh(Gem.ruby, '-S', 'gem', *args)
   end
 
+  def glob path=dir
+    Dir.glob("#{path}/**/*", File::FNM_DOTMATCH)
+  end
+
   def readme
     @readme ||=
       if (path = "#{Gemgem.dir}/README.md") && File.exist?(path)
@@ -94,15 +98,21 @@ module Gemgem
   end
 
   def all_files
-    @all_files ||=
-      Dir.glob("#{dir}/**/*", File::FNM_DOTMATCH).inject([]){ |files, path|
-        if File.file?(path) && path !~ %r{/\.git(/|$)}  &&
-           (rpath = path[%r{^#{escaped_dir}/(.*$)}, 1])
-          files << rpath
-        else
-          files
-        end
-      }.sort
+    @all_files ||= fold_files(glob).sort
+  end
+
+  def fold_files files
+    files.inject([]){ |r, path|
+      if File.file?(path) && path !~ %r{/\.git(/|$)}  &&
+         (rpath = path[%r{^#{escaped_dir}/(.*$)}, 1])
+        r << rpath
+      elsif File.symlink?(path) # walk into symlinks...
+        r.concat(fold_files(glob(File.expand_path(path,
+                                                  File.readlink(path)))))
+      else
+        r
+      end
+    }
   end
 
   def gem_files
