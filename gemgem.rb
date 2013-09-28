@@ -193,5 +193,7 @@ task :clean => ['gem:spec'] do
 end
 
 task :default do
+  # Is there a reliable way to do this in the current process?
+  # It failed miserably before between Rake versions...
   exec "#{Gem.ruby} -S #{$PROGRAM_NAME} -f #{Rake.application.rakefile} -T"
 end
