@@ -14,7 +14,8 @@ module Gemgem
   def init dir, &block
     self.dir = dir
     $LOAD_PATH.unshift("#{dir}/lib")
-    ENV['PATH'] = "#{dir}/bin:#{ENV['PATH']}"
+    ENV['RUBYLIB'] = "#{dir}/lib:#{ENV['RUBYLIB']}"
+    ENV['PATH']    = "#{dir}/bin:#{ENV['PATH']}"
     self.spec_create = block
   end
 
