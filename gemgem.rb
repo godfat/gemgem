@@ -72,7 +72,7 @@ module Gemgem
   end
 
   def sh_gem *args
-    Rake.sh(strip_path(Gem.ruby), '-S', 'gem', *args)
+    Rake.sh(Gem.ruby, '-S', 'gem', *args)
   end
 
   def readme
@@ -163,7 +163,7 @@ namespace :gem do
 
 desc 'Install gem'
 task :install => [:build] do
-  Gemgem.sh_gem('install', Gemgem.strip_path(Gemgem.gem_path))
+  Gemgem.sh_gem('install', Gemgem.gem_path)
 end
 
 desc 'Build gem'
@@ -192,7 +192,7 @@ task :release => [:spec, :check, :build] do
     sh_git('tag', Gemgem.gem_tag)
     sh_git('push')
     sh_git('push --tags')
-    sh_gem('push', Gemgem.strip_path(Gemgem.gem_path))
+    sh_gem('push', Gemgem.gem_path)
   end
 end
 
