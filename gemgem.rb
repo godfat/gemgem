@@ -63,6 +63,18 @@ module Gemgem
     path.sub(Dir.pwd, '.')
   end
 
+  def git *args
+    `git --git-dir=#{dir}/.git #{args.join(' ')}`
+  end
+
+  def sh_git *args
+    Rake.sh('git', "--git-dir=#{dir}/.git", *args)
+  end
+
+  def sh_gem *args
+    Rake.sh(strip_path(Gem.ruby), '-S', 'gem', *args)
+  end
+
   def readme
     @readme ||=
       if (path = "#{Gemgem.dir}/README.md") && File.exist?(path)
@@ -109,7 +121,7 @@ module Gemgem
 
   def git_files
     @git_files ||= if File.exist?("#{dir}/.git")
-                     `git --git-dir=#{dir}/.git ls-files`.split("\n")
+                     git('ls-files').split("\n")
                    else
                      []
                    end
@@ -151,8 +163,7 @@ namespace :gem do
 
 desc 'Install gem'
 task :install => [:build] do
-  ruby, gem = Gemgem.strip_path(Gem.ruby), Gemgem.strip_path(Gemgem.gem_path)
-  sh("#{ruby} -S gem install #{gem}")
+  Gemgem.sh_gem('install', Gemgem.strip_path(Gemgem.gem_path))
 end
 
 desc 'Build gem'
@@ -177,10 +188,12 @@ end
 
 desc 'Release gem'
 task :release => [:spec, :check, :build] do
-  sh("git tag #{Gemgem.gem_tag}")
-  sh("git push")
-  sh("git push --tags")
-  sh("#{Gem.ruby} -S gem push #{Gemgem.gem_path}")
+  Gemgem.module_eval do
+    sh_git('tag', Gemgem.gem_tag)
+    sh_git('push')
+    sh_git('push --tags')
+    sh_gem('push', Gemgem.strip_path(Gemgem.gem_path))
+  end
 end
 
 task :check do
