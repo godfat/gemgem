@@ -151,7 +151,8 @@ namespace :gem do
 
 desc 'Install gem'
 task :install => [:build] do
-  sh("#{Gem.ruby} -S gem install #{Gemgem.gem_path}")
+  ruby, gem = Gemgem.strip_path(Gem.ruby), Gemgem.strip_path(Gemgem.gem_path)
+  sh("#{ruby} -S gem install #{gem}")
 end
 
 desc 'Build gem'
