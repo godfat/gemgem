@@ -203,7 +203,7 @@ task :release => [:spec, :check, :build] do
   Gemgem.module_eval do
     sh_git('tag', Gemgem.gem_tag)
     sh_git('push')
-    sh_git('push --tags')
+    sh_git('push', '--tags')
     sh_gem('push', Gemgem.gem_path)
   end
 end
