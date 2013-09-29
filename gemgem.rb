@@ -95,7 +95,8 @@ module Gemgem
   end
 
   def description
-    @description ||= (readme['DESCRIPTION']||'').sub(/.+\n\n/, '').lines
+    # JRuby String#lines is returning an enumerator
+    @description ||= (readme['DESCRIPTION']||'').sub(/.+\n\n/, '').lines.to_a
   end
 
   def all_files
