@@ -135,7 +135,7 @@ module Gemgem
     @git_files ||= if File.exist?("#{dir}/.git")
                      git('ls-files').split("\n")
                    else
-                     []
+                     ['^$']
                    end
   end
 
