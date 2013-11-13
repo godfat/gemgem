@@ -226,7 +226,7 @@ end
 
 end # of gem namespace
 
-desc 'Run tests in memory'
+desc 'Run tests'
 task :test do
   next if Gemgem.test_files.empty?
 
@@ -236,7 +236,7 @@ task :test do
   Gemgem.test_files.each{ |file| require "#{Gemgem.dir}/#{file[0..-4]}" }
 end
 
-desc 'Remove ignored files'
+desc 'Trash ignored files'
 task :clean => ['gem:spec'] do
   next if Gemgem.ignored_files.empty?
 
