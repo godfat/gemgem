@@ -154,14 +154,8 @@ module Gemgem
   def expand_patterns pathes
     # http://git-scm.com/docs/gitignore
     pathes.flat_map{ |path|
-      case path
-      when %r{\*}
-        Regexp.escape(path).gsub(/\\\*/, '[^/]*')
-      when %r{^/}
-        "^#{Regexp.escape(path[1..-1])}"
-      else # we didn't implement negative pattern for now
-        Regexp.escape(path)
-      end
+      # we didn't implement negative pattern for now
+      Regexp.escape(path).sub(/^\\\//, '^').gsub(/\\\*/, '[^/]*')
     }
   end
 
