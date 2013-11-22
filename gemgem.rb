@@ -135,7 +135,7 @@ module Gemgem
     @git_files ||= if File.exist?("#{dir}/.git")
                      git('ls-files').split("\n")
                    else
-                     ['^$']
+                     []
                    end
   end
 
@@ -144,7 +144,11 @@ module Gemgem
   end
 
   def ignored_pattern
-    @ignored_pattern ||= Regexp.new(expand_patterns(gitignore).join('|'))
+    @ignored_pattern ||= if gitignore.empty?
+                           /^$/
+                         else
+                           Regexp.new(expand_patterns(gitignore).join('|'))
+                         end
   end
 
   def expand_patterns pathes
