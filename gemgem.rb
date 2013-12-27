@@ -155,7 +155,7 @@ module Gemgem
     # http://git-scm.com/docs/gitignore
     pathes.flat_map{ |path|
       # we didn't implement negative pattern for now
-      Regexp.escape(path).sub(/^\\\//, '^').gsub(/\\\*/, '[^/]*')
+      Regexp.escape(path).sub(%r{^/}, '^').gsub(/\\\*/, '[^/]*')
     }
   end
 
