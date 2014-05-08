@@ -34,7 +34,7 @@ module Gemgem
       s.executables = bin_files
     end
     spec_create.call(spec)
-    spec.homepage = "https://github.com/godfat/#{spec.name}"
+    spec.homepage ||= "https://github.com/godfat/#{spec.name}"
     self.spec = spec
   end
 
