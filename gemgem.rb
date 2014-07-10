@@ -227,10 +227,6 @@ end # of gem namespace
 desc 'Run tests'
 task :test do
   next if Gemgem.test_files.empty?
-
-  require 'bacon'
-  Bacon.extend(Bacon::TestUnitOutput)
-  Bacon.summary_on_exit
   Gemgem.test_files.each{ |file| require "#{Gemgem.dir}/#{file[0..-4]}" }
 end
 
