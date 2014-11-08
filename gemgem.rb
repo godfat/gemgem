@@ -92,7 +92,10 @@ module Gemgem
         require 'coveralls'
         SimpleCov.formatter = Coveralls::SimpleCov::Formatter
       end
-      SimpleCov.start
+      SimpleCov.start do
+        add_filter('test/')
+        add_filter('test.rb')
+      end
     end
 
     test_files.each{ |file| require "#{dir}/#{file[0..-4]}" }
