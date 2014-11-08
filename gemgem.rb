@@ -38,7 +38,7 @@ module Gemgem
     self.spec = spec
   end
 
-  def run_test
+  def test
     return if test_files.empty?
 
     if ENV['COV'] || ENV['CI']
@@ -50,7 +50,55 @@ module Gemgem
       SimpleCov.start
     end
 
-    test_files.each{ |file| require "#{Gemgem.dir}/#{file[0..-4]}" }
+    test_files.each{ |file| require "#{dir}/#{file[0..-4]}" }
+  end
+
+  def clean
+    return if ignored_files.empty?
+
+    require 'fileutils'
+    trash = File.expand_path("~/.Trash/#{spec.name}")
+    puts "Move the following files into:" \
+         " \e[35m#{strip_path(trash)}\e[33m"
+
+    ignored_files.each do |file|
+      from = "#{dir}/#{file}"
+      to   = "#{trash}/#{File.dirname(file)}"
+      puts strip_path(from)
+
+      FileUtils.mkdir_p(to)
+      FileUtils.mv(from, to)
+    end
+
+    print "\e[0m"
+  end
+
+  def gem_check
+    ver = spec.version.to_s
+
+    if ENV['VERSION'].nil?
+      puts("\e[35mExpected "                                  \
+           "\e[33mVERSION\e[35m=\e[33m#{ver}\e[0m")
+      exit(1)
+
+    elsif ENV['VERSION'] != ver
+      puts("\e[35mExpected \e[33mVERSION\e[35m=\e[33m#{ver} " \
+           "\e[35mbut got\n         "                         \
+           "\e[33mVERSION\e[35m=\e[33m#{ENV['VERSION']}\e[0m")
+      exit(2)
+    end
+  end
+
+  def gem_spec
+    create
+    write
+  end
+
+  def gem_release
+    sh_git('tag', gem_tag)
+    sh_git('push')
+    sh_git('push', '--tags')
+    sh_gem('push', gem_path)
   end
 
   def write
@@ -207,62 +255,28 @@ end
 
 desc 'Generate gemspec'
 task :spec do
-  Gemgem.create
-  Gemgem.write
+  Gemgem.gem_spec
 end
 
 desc 'Release gem'
 task :release => [:spec, :check, :build] do
-  Gemgem.module_eval do
-    sh_git('tag', Gemgem.gem_tag)
-    sh_git('push')
-    sh_git('push', '--tags')
-    sh_gem('push', Gemgem.gem_path)
-  end
+  Gemgem.gem_release
 end
 
 task :check do
-  ver = Gemgem.spec.version.to_s
-
-  if ENV['VERSION'].nil?
-    puts("\e[35mExpected "                                  \
-         "\e[33mVERSION\e[35m=\e[33m#{ver}\e[0m")
-    exit(1)
-
-  elsif ENV['VERSION'] != ver
-    puts("\e[35mExpected \e[33mVERSION\e[35m=\e[33m#{ver} " \
-         "\e[35mbut got\n         "                         \
-         "\e[33mVERSION\e[35m=\e[33m#{ENV['VERSION']}\e[0m")
-    exit(2)
-  end
+  Gemgem.gem_check
 end
 
 end # of gem namespace
 
 desc 'Run tests'
 task :test do
-  Gemgem.run_test
+  Gemgem.test
 end
 
 desc 'Trash ignored files'
 task :clean => ['gem:spec'] do
-  next if Gemgem.ignored_files.empty?
-
-  require 'fileutils'
-  trash = File.expand_path("~/.Trash/#{Gemgem.spec.name}")
-  puts "Move the following files into:" \
-       " \e[35m#{Gemgem.strip_path(trash)}\e[33m"
-
-  Gemgem.ignored_files.each do |file|
-    from = "#{Gemgem.dir}/#{file}"
-    to   = "#{trash}/#{File.dirname(file)}"
-    puts Gemgem.strip_path(from)
-
-    FileUtils.mkdir_p(to)
-    FileUtils.mv(from, to)
-  end
-
-  print "\e[0m"
+  Gemgem.clean
 end
 
 task :default do
