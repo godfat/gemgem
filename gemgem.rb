@@ -42,6 +42,47 @@ module Gemgem
     sh_gem('install', gem_path)
   end
 
+  def gem_spec
+    create
+    write
+  end
+
+  def gem_build
+    require 'fileutils'
+    require 'rubygems/package'
+    gem = nil
+    Dir.chdir(dir) do
+      gem = Gem::Package.build(Gem::Specification.load(spec_path))
+      FileUtils.mkdir_p(pkg_dir)
+      FileUtils.mv(gem, pkg_dir) # gem is relative path, but might be ok
+    end
+    puts "\e[35mGem built: \e[33m" \
+         "#{strip_path("#{pkg_dir}/#{gem}")}\e[0m"
+  end
+
+  def gem_release
+    sh_git('tag', gem_tag)
+    sh_git('push')
+    sh_git('push', '--tags')
+    sh_gem('push', gem_path)
+  end
+
+  def gem_check
+    ver = spec.version.to_s
+
+    if ENV['VERSION'].nil?
+      puts("\e[35mExpected "                                  \
+           "\e[33mVERSION\e[35m=\e[33m#{ver}\e[0m")
+      exit(1)
+
+    elsif ENV['VERSION'] != ver
+      puts("\e[35mExpected \e[33mVERSION\e[35m=\e[33m#{ver} " \
+           "\e[35mbut got\n         "                         \
+           "\e[33mVERSION\e[35m=\e[33m#{ENV['VERSION']}\e[0m")
+      exit(2)
+    end
+  end
+
   def test
     return if test_files.empty?
 
@@ -75,47 +116,6 @@ module Gemgem
     end
 
     print "\e[0m"
-  end
-
-  def gem_check
-    ver = spec.version.to_s
-
-    if ENV['VERSION'].nil?
-      puts("\e[35mExpected "                                  \
-           "\e[33mVERSION\e[35m=\e[33m#{ver}\e[0m")
-      exit(1)
-
-    elsif ENV['VERSION'] != ver
-      puts("\e[35mExpected \e[33mVERSION\e[35m=\e[33m#{ver} " \
-           "\e[35mbut got\n         "                         \
-           "\e[33mVERSION\e[35m=\e[33m#{ENV['VERSION']}\e[0m")
-      exit(2)
-    end
-  end
-
-  def gem_spec
-    create
-    write
-  end
-
-  def gem_release
-    sh_git('tag', gem_tag)
-    sh_git('push')
-    sh_git('push', '--tags')
-    sh_gem('push', gem_path)
-  end
-
-  def gem_build
-    require 'fileutils'
-    require 'rubygems/package'
-    gem = nil
-    Dir.chdir(dir) do
-      gem = Gem::Package.build(Gem::Specification.load(spec_path))
-      FileUtils.mkdir_p(pkg_dir)
-      FileUtils.mv(gem, pkg_dir) # gem is relative path, but might be ok
-    end
-    puts "\e[35mGem built: \e[33m" \
-         "#{strip_path("#{pkg_dir}/#{gem}")}\e[0m"
   end
 
   def write
