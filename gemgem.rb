@@ -38,6 +38,21 @@ module Gemgem
     self.spec = spec
   end
 
+  def run_test
+    return if test_files.empty?
+
+    if ENV['COV'] || ENV['CI']
+      require 'simplecov'
+      if ENV['CI']
+        require 'coveralls'
+        SimpleCov.formatter = Coveralls::SimpleCov::Formatter
+      end
+      SimpleCov.start
+    end
+
+    test_files.each{ |file| require "#{Gemgem.dir}/#{file[0..-4]}" }
+  end
+
   def write
     File.open(spec_path, 'w'){ |f| f << split_lines(spec.to_ruby) }
   end
@@ -226,8 +241,7 @@ end # of gem namespace
 
 desc 'Run tests'
 task :test do
-  next if Gemgem.test_files.empty?
-  Gemgem.test_files.each{ |file| require "#{Gemgem.dir}/#{file[0..-4]}" }
+  Gemgem.run_test
 end
 
 desc 'Trash ignored files'
