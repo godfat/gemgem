@@ -38,6 +38,10 @@ module Gemgem
     self.spec = spec
   end
 
+  def gem_install
+    sh_gem('install', gem_path)
+  end
+
   def test
     return if test_files.empty?
 
@@ -99,6 +103,19 @@ module Gemgem
     sh_git('push')
     sh_git('push', '--tags')
     sh_gem('push', gem_path)
+  end
+
+  def gem_build
+    require 'fileutils'
+    require 'rubygems/package'
+    gem = nil
+    Dir.chdir(dir) do
+      gem = Gem::Package.build(Gem::Specification.load(spec_path))
+      FileUtils.mkdir_p(pkg_dir)
+      FileUtils.mv(gem, pkg_dir) # gem is relative path, but might be ok
+    end
+    puts "\e[35mGem built: \e[33m" \
+         "#{strip_path("#{pkg_dir}/#{gem}")}\e[0m"
   end
 
   def write
@@ -236,21 +253,12 @@ namespace :gem do
 
 desc 'Install gem'
 task :install => [:build] do
-  Gemgem.sh_gem('install', Gemgem.gem_path)
+  Gemgem.gem_install
 end
 
 desc 'Build gem'
 task :build => [:spec] do
-  require 'fileutils'
-  require 'rubygems/package'
-  gem = nil
-  Dir.chdir(Gemgem.dir) do
-    gem = Gem::Package.build(Gem::Specification.load(Gemgem.spec_path))
-    FileUtils.mkdir_p(Gemgem.pkg_dir)
-    FileUtils.mv(gem, Gemgem.pkg_dir) # gem is relative path, but might be ok
-  end
-  puts "\e[35mGem built: \e[33m" \
-       "#{Gemgem.strip_path("#{Gemgem.pkg_dir}/#{gem}")}\e[0m"
+  Gemgem.gem_build
 end
 
 desc 'Generate gemspec'
