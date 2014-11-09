@@ -68,8 +68,7 @@ module Gemgem
       FileUtils.mkdir_p(pkg_dir)
       FileUtils.mv(gem, pkg_dir) # gem is relative path, but might be ok
     end
-    puts "\e[35mGem built: \e[33m" \
-         "#{strip_path("#{pkg_dir}/#{gem}")}\e[0m"
+    puts "\e[35mGem built: \e[33m#{strip_path("#{pkg_dir}/#{gem}")}\e[0m"
   end
 
   def gem_release
@@ -118,8 +117,7 @@ module Gemgem
 
     require 'fileutils'
     trash = File.expand_path("~/.Trash/#{spec.name}")
-    puts "Move the following files into:" \
-         " \e[35m#{strip_path(trash)}\e[33m"
+    puts "Move the following files into: \e[35m#{strip_path(trash)}\e[33m"
 
     ignored_files.each do |file|
       from = "#{dir}/#{file}"
