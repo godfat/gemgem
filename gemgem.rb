@@ -39,7 +39,19 @@ module Gemgem
   end
 
   def gem_install
-    sh_gem('install', gem_path)
+    require 'rubygems/commands/install_command'
+    # read ~/.gemrc
+    Gem.use_paths(Gem.configuration[:gemhome], Gem.configuration[:gempath])
+    Gem::Command.extra_args = Gem.configuration[:gem]
+
+    # setup install options
+    cmd = Gem::Commands::InstallCommand.new
+    cmd.handle_options([])
+
+    # install
+    install = Gem::Installer.new(gem_path, cmd.options)
+    install.install
+    puts "\e[35mGem installed: \e[33m#{strip_path(install.gem_dir)}\e[0m"
   end
 
   def gem_spec
