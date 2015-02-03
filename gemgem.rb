@@ -102,7 +102,7 @@ module Gemgem
       if ENV['CI']
         require 'coveralls'
         SimpleCov.formatter = Coveralls::SimpleCov::Formatter
-        SimpleCov.command_name = 'pork'
+        SimpleCov.command_name('pork')
       end
       SimpleCov.start do
         add_filter('test/')
