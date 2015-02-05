@@ -100,9 +100,12 @@ module Gemgem
     if ENV['COV'] || ENV['CI']
       require 'simplecov'
       if ENV['CI']
-        require 'coveralls'
-        SimpleCov.formatter = Coveralls::SimpleCov::Formatter
-        SimpleCov.command_name('pork')
+        begin
+          require 'coveralls'
+          SimpleCov.formatter = Coveralls::SimpleCov::Formatter
+        rescue LoadError => e
+          puts "Cannot load coveralls, skip: #{e}"
+        end
       end
       SimpleCov.start do
         add_filter('test/')
