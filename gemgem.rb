@@ -79,6 +79,11 @@ module Gemgem
   end
 
   def gem_check
+    unless git('status', '--porcelain').empty?
+      puts("\e[35mWorking copy is not clean.\e[0m")
+      exit(3)
+    end
+
     ver = spec.version.to_s
 
     if ENV['VERSION'].nil?
