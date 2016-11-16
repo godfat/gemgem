@@ -117,7 +117,7 @@ module Gemgem
       SimpleCov.start do
         add_filter('test/')
         add_filter('test.rb')
-        submodules.each(&method(:add_filter))
+        submodules_libs.each(&method(:add_filter))
       end
     end
 
