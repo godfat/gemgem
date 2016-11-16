@@ -13,7 +13,7 @@ Provided tasks:
 
 ## REQUIREMENTS:
 
-* Tested with MRI (official CRuby) 1.9.3, 2.0.0, Rubinius and JRuby.
+* Tested with MRI (official CRuby), Rubinius and JRuby.
 
 ## INSTALLATION:
 
@@ -23,13 +23,13 @@ And in Rakefile:
 
 ``` ruby
 begin
-  require "#{dir = File.dirname(__FILE__)}/task/gemgem"
+  require "#{__dir__}/task/gemgem"
 rescue LoadError
   sh 'git submodule update --init'
   exec Gem.ruby, '-S', $PROGRAM_NAME, *ARGV
 end
 
-Gemgem.init(dir) do |s|
+Gemgem.init(__dir__, :submodules => %w[your-dep]) do |s|
   s.name    = 'your-gem'
   s.version = '0.1.0'
 end
@@ -39,7 +39,7 @@ end
 
 Apache License 2.0
 
-Copyright (c) 2011-2013, Lin Jen-Shin (godfat)
+Copyright (c) 2011-2016, Lin Jen-Shin (godfat)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

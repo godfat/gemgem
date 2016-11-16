@@ -1,7 +1,7 @@
 
 module Gemgem
   class << self
-    attr_accessor :dir, :spec, :spec_create
+    attr_accessor :dir, :spec, :submodules, :spec_create
   end
 
   module_function
@@ -11,12 +11,14 @@ module Gemgem
   def pkg_dir    ; "#{dir}/pkg"                       ; end
   def escaped_dir; @escaped_dir ||= Regexp.escape(dir); end
 
-  def init dir, &block
+  def init dir, options={}, &block
     self.dir = dir
-    $LOAD_PATH.unshift("#{dir}/lib")
     ENV['RUBYLIB'] = "#{dir}/lib:#{ENV['RUBYLIB']}"
     ENV['PATH']    = "#{dir}/bin:#{ENV['PATH']}"
+    self.submodules  = options[:submodules] || []
     self.spec_create = block
+
+    $LOAD_PATH.unshift("#{dir}/lib", *submodules_libs)
   end
 
   def create
@@ -159,11 +161,15 @@ module Gemgem
   end
 
   def strip_home_path path
-    path.sub(ENV['HOME'], '~')
+    path.sub(/\A#{Regexp.escape(ENV['HOME'])}\//, '~/')
   end
 
   def strip_cwd_path path
-    path.sub(Dir.pwd, '.')
+    path.sub(/\A#{Regexp.escape(Dir.pwd)}\//, '')
+  end
+
+  def submodules_libs
+    submodules.map{ |path| "#{dir}/#{path}/lib" }
   end
 
   def git *args
@@ -221,7 +227,8 @@ module Gemgem
 
   def gem_files
     @gem_files ||= all_files.reject{ |f|
-      f =~ ignored_pattern && !git_files.include?(f)
+      f =~ submodules_pattern ||
+        (f =~ ignored_pattern && !git_files.include?(f))
     }
   end
 
@@ -251,6 +258,11 @@ module Gemgem
                          else
                            Regexp.new(expand_patterns(gitignore).join('|'))
                          end
+  end
+
+  def submodules_pattern
+    @submodules_pattern ||=
+      Regexp.new(submodules.map{|path| "^#{Regexp.escape(path)}/"}.join('|'))
   end
 
   def expand_patterns pathes
