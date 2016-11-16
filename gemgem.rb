@@ -262,8 +262,12 @@ module Gemgem
   end
 
   def submodules_pattern
-    @submodules_pattern ||=
-      Regexp.new(submodules.map{|path| "^#{Regexp.escape(path)}/"}.join('|'))
+    @submodules_pattern ||= if submodules.empty?
+                              /^$/
+                            else
+                              Regexp.new(submodules.map{ |path|
+                                "^#{Regexp.escape(path)}/" }.join('|'))
+                            end
   end
 
   def expand_patterns pathes
