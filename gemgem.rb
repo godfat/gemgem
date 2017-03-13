@@ -28,7 +28,7 @@ module Gemgem
 
       s.description = description.join
       s.summary     = description.first
-      s.license     = readme['LICENSE'].sub(/.+\n\n/, '').lines.first.strip
+      s.license     = license
 
       s.date        = Time.now.strftime('%Y-%m-%d')
       s.files       = gem_files
@@ -206,6 +206,11 @@ module Gemgem
   def description
     # JRuby String#lines is returning an enumerator
     @description ||= (readme['DESCRIPTION']||'').sub(/.+\n\n/, '').lines.to_a
+  end
+
+  def license
+    readme['LICENSE'].sub(/.+\n\n/, '').lines.first.
+      split(/[()]/).map(&:strip).reject(&:empty?).last
   end
 
   def all_files

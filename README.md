@@ -4,12 +4,12 @@
 
 Provided tasks:
 
-    rake clean        # Remove ignored files
+    rake clean        # Trash ignored files
     rake gem:build    # Build gem
     rake gem:install  # Install gem
     rake gem:release  # Release gem
     rake gem:spec     # Generate gemspec
-    rake test         # Run tests in memory
+    rake test         # Run tests
 
 ## REQUIREMENTS:
 
@@ -25,7 +25,7 @@ And in Rakefile:
 begin
   require "#{__dir__}/task/gemgem"
 rescue LoadError
-  sh 'git submodule update --init'
+  sh 'git submodule update --init --recursive'
   exec Gem.ruby, '-S', $PROGRAM_NAME, *ARGV
 end
 
@@ -37,9 +37,9 @@ end
 
 ## LICENSE:
 
-Apache License 2.0
+Apache License 2.0 (Apache-2.0)
 
-Copyright (c) 2011-2016, Lin Jen-Shin (godfat)
+Copyright (c) 2011-2017, Lin Jen-Shin (godfat)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
